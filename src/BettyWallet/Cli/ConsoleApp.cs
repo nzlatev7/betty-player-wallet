@@ -35,6 +35,9 @@ public sealed class ConsoleApp(IConsoleIO io, Wallet wallet, Game game)
         }
 
         io.WriteLine("Thank you for playing! Hope to see you again soon.");
+        io.WriteLine(string.Empty);
+        io.WriteLine("Press any key to exit.");
+        io.WaitForKey();
     }
 
     private void Execute(Command command)

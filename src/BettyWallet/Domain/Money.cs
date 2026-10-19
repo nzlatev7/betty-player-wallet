@@ -10,10 +10,15 @@ public static class Money
 
     public static bool HasValidPrecision(decimal amount) => decimal.Round(amount, Decimals) == amount;
 
-    public static decimal Round(decimal amount) => decimal.Round(amount, Decimals, MidpointRounding.AwayFromZero);
+    /// <summary>Rounds to cents (midpoints away from zero); the result always carries two decimals, e.g. 10.00.</summary>
+    public static decimal Round(decimal amount) =>
+        decimal.Round(amount, Decimals, MidpointRounding.AwayFromZero) + 0.00m;
 
-    public static string Format(decimal amount) =>
-        "$" + amount.ToString("F" + Decimals, CultureInfo.InvariantCulture);
+    /// <summary>
+    /// Formats with the decimal's own scale, as in the task's sample: "$10" for a deposit typed as 10,
+    /// "$44.00" for a withdrawal typed as 44.00, "$40.35" for a payout-driven balance.
+    /// </summary>
+    public static string Format(decimal amount) => "$" + amount.ToString(CultureInfo.InvariantCulture);
 
     /// <summary>Input amounts must be strictly positive and must not carry sub-cent precision.</summary>
     public static void EnsureValidAmount(decimal amount)

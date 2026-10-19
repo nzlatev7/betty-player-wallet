@@ -11,6 +11,10 @@ public sealed class ScriptedConsoleIO(params string[] input) : IConsoleIO
 
     public int UnreadInputCount => _input.Count;
 
+    public bool WaitedForKey { get; private set; }
+
+    public void WaitForKey() => WaitedForKey = true;
+
     public string? ReadLine() => _input.TryDequeue(out var line) ? line : null;
 
     public void WriteLine(string text) => Output.Add(text);

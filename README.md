@@ -26,7 +26,7 @@ End of input (Ctrl+Z then Enter on Windows, Ctrl+D elsewhere) also ends the sess
 ```text
 Please, submit action:
 deposit 10
-Your deposit of $10.00 was successful. Your current balance is: $10.00
+Your deposit of $10 was successful. Your current balance is: $10
 
 Please, submit action:
 bet 5
@@ -43,6 +43,8 @@ Your withdrawal of $30.35 was successful. Your current balance is: $0.00
 Please, submit action:
 exit
 Thank you for playing! Hope to see you again soon.
+
+Press any key to exit.
 ```
 
 A rejected operation explains why and still shows the unchanged balance:
@@ -50,7 +52,7 @@ A rejected operation explains why and still shows the unchanged balance:
 ```text
 Please, submit action:
 withdraw 50
-Error: Insufficient funds for $50.00. Your current balance is: $0.00
+Error: Insufficient funds for $50. Your current balance is: $0
 ```
 
 The automated test `CompleteSession_ReproducesTheTaskExample` replays the exact session from the task PDF
@@ -74,8 +76,8 @@ My interpretations (the task is silent):
 | Amount syntax | Invariant culture: `.` decimal separator; no thousands separators, currency symbols or exponents. `10`, `10.5`, `10.50` are valid; `1,000`, `$5`, `1e3` are not. Zero and negative amounts are rejected with a clear message. |
 | Commands | Case-insensitive, extra whitespace ignored, exact argument count required. |
 | Overflow | Numbers beyond `decimal` are rejected as invalid; a balance that would exceed `decimal.MaxValue` is rejected. |
-| Display | Always `$` plus two decimals (`$10.00`). The task's sample prints `$10` and `$44.00` inconsistently because it echoes raw decimal values. |
-| Not implemented | The sample's trailing "Press any key to exit." line; the app simply returns. |
+| Display | As in the task's sample, amounts print with the decimal's own scale: what you typed is echoed (`deposit 10` gives `$10`, `withdraw 44.00` gives `$44.00`) and balances follow decimal arithmetic. Payouts always have two decimals (`$11.90`). |
+| Exit | Prints "Press any key to exit." and waits for a key, like the sample; skipped when input is redirected (pipes, tests), where there is no key to read. |
 
 Outcome probabilities are per round, not guaranteed frequencies over a short session.
 

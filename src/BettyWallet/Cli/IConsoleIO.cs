@@ -6,6 +6,9 @@ public interface IConsoleIO
     string? ReadLine();
 
     void WriteLine(string text);
+
+    /// <summary>Blocks until the player presses a key; does nothing when there is no interactive console.</summary>
+    void WaitForKey();
 }
 
 public sealed class SystemConsoleIO : IConsoleIO
@@ -13,4 +16,12 @@ public sealed class SystemConsoleIO : IConsoleIO
     public string? ReadLine() => Console.ReadLine();
 
     public void WriteLine(string text) => Console.WriteLine(text);
+
+    public void WaitForKey()
+    {
+        if (!Console.IsInputRedirected)
+        {
+            Console.ReadKey(intercept: true);
+        }
+    }
 }

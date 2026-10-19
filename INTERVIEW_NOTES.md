@@ -55,7 +55,7 @@
 
 ## Testing strategy
 
-- 93 xUnit tests, no mocking framework: two small hand-written doubles (`SequenceRandom`, `ScriptedConsoleIO`).
+- 91 xUnit tests, no mocking framework: two small hand-written doubles (`SequenceRandom`, `ScriptedConsoleIO`).
 - Wallet: initial balance, deposits, withdrawals, exact-balance withdrawal, insufficient funds, invalid amounts, overflow, and
   "balance unchanged after rejection" for every rejection path.
 - Game: bet limits at the exact boundaries (0.99, 1, 10, 10.01), every roll threshold (0, 49, 50, 89, 90, 99), payout bounds

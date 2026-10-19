@@ -7,6 +7,8 @@ namespace BettyWallet.Tests;
 
 public class ConsoleAppTests
 {
+    private const string Goodbye = "Thank you for playing! Hope to see you again soon.";
+
     [Fact]
     public void CompleteSession_ReproducesTheTaskExample()
     {
@@ -24,7 +26,7 @@ public class ConsoleAppTests
         Assert.Equal(
             """
             Please, submit action:
-            Your deposit of $10.00 was successful. Your current balance is: $10.00
+            Your deposit of $10 was successful. Your current balance is: $10
 
             Please, submit action:
             Congrats - you won $35.35! Your current balance is: $40.35
@@ -46,9 +48,12 @@ public class ConsoleAppTests
 
             Please, submit action:
             Thank you for playing! Hope to see you again soon.
+
+            Press any key to exit.
             """.ReplaceLineEndings("\n"),
             io.Transcript);
         Assert.Equal(0.15m, wallet.Balance);
+        Assert.True(io.WaitedForKey);
     }
 
     [Fact]
@@ -58,7 +63,8 @@ public class ConsoleAppTests
 
         Assert.Equal(1, io.UnreadInputCount);
         Assert.Equal(0m, wallet.Balance);
-        Assert.Equal("Thank you for playing! Hope to see you again soon.", io.Output[^1]);
+        Assert.Contains(Goodbye, io.Output);
+        Assert.True(io.WaitedForKey);
     }
 
     [Fact]
@@ -67,7 +73,7 @@ public class ConsoleAppTests
         var (io, wallet) = Run(new SequenceRandom(), "deposit 5");
 
         Assert.Equal(5m, wallet.Balance);
-        Assert.Equal("Thank you for playing! Hope to see you again soon.", io.Output[^1]);
+        Assert.Contains(Goodbye, io.Output);
     }
 
     [Fact]
@@ -76,7 +82,7 @@ public class ConsoleAppTests
         var (io, wallet) = Run(new SequenceRandom());
 
         Assert.Equal(0m, wallet.Balance);
-        Assert.Equal(["Please, submit action:", "Thank you for playing! Hope to see you again soon."], io.Output);
+        Assert.Equal(["Please, submit action:", Goodbye, "", "Press any key to exit."], io.Output);
     }
 
     [Theory]
@@ -90,17 +96,17 @@ public class ConsoleAppTests
         var (io, wallet) = Run(new SequenceRandom(), "deposit 10", input, "withdraw 1", "exit");
 
         Assert.Contains(io.Output, line => line.StartsWith(expectedError));
-        Assert.Contains("Your withdrawal of $1.00 was successful. Your current balance is: $9.00", io.Output);
+        Assert.Contains("Your withdrawal of $1 was successful. Your current balance is: $9", io.Output);
         Assert.Equal(9m, wallet.Balance);
     }
 
     [Theory]
-    [InlineData("withdraw 0", "Error: Amount must be greater than zero. Your current balance is: $10.00")]
-    [InlineData("withdraw -5", "Error: Amount must be greater than zero. Your current balance is: $10.00")]
-    [InlineData("deposit 1.234", "Error: Amount must have at most 2 decimal places. Your current balance is: $10.00")]
-    [InlineData("withdraw 10.01", "Error: Insufficient funds for $10.01. Your current balance is: $10.00")]
-    [InlineData("bet 0.99", "Error: Bet must be between $1.00 and $10.00. Your current balance is: $10.00")]
-    [InlineData("bet 10.01", "Error: Bet must be between $1.00 and $10.00. Your current balance is: $10.00")]
+    [InlineData("withdraw 0", "Error: Amount must be greater than zero. Your current balance is: $10")]
+    [InlineData("withdraw -5", "Error: Amount must be greater than zero. Your current balance is: $10")]
+    [InlineData("deposit 1.234", "Error: Amount must have at most 2 decimal places. Your current balance is: $10")]
+    [InlineData("withdraw 10.01", "Error: Insufficient funds for $10.01. Your current balance is: $10")]
+    [InlineData("bet 0.99", "Error: Bet must be between $1 and $10. Your current balance is: $10")]
+    [InlineData("bet 10.01", "Error: Bet must be between $1 and $10. Your current balance is: $10")]
     public void RejectedOperations_ExplainWhy_AndShowTheUnchangedBalance(string input, string expectedLine)
     {
         var random = new SequenceRandom();
@@ -116,7 +122,7 @@ public class ConsoleAppTests
     {
         var (io, wallet) = Run(new SequenceRandom(0), "bet 5", "exit");
 
-        Assert.Contains("Error: Insufficient funds for $5.00. Your current balance is: $0.00", io.Output);
+        Assert.Contains("Error: Insufficient funds for $5. Your current balance is: $0", io.Output);
         Assert.Equal(0m, wallet.Balance);
     }
 
